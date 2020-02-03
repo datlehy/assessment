@@ -1,5 +1,6 @@
 package user.assessment.restfulapi.controller;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import user.assessment.restfulapi.exception.ResourceNotFoundException;
 import user.assessment.restfulapi.model.Currency;
+import user.assessment.restfulapi.model.ExchangeCurrency;
 import user.assessment.restfulapi.repository.CurrencyRepository;
 
 @RestController
@@ -28,12 +30,12 @@ public class CurrencyController
     @Autowired
     private CurrencyRepository currencyRepository;
 
-    @GetMapping("currency")
+    @GetMapping("/currency")
     public List<Currency> getAllCurrencies() {
         return currencyRepository.findAll();
     }
 
-    @GetMapping("currency/{id}")
+    @GetMapping("/currency/{id}")
     public ResponseEntity<Currency> getCurrencyById(@PathVariable(value = "id") Long currencyId)
             throws ResourceNotFoundException {
         
@@ -43,12 +45,12 @@ public class CurrencyController
         return ResponseEntity.ok().body(currency);
     }
 
-    @PostMapping("currency")
+    @PostMapping("/currency")
     public Currency createCurrency(@Valid @RequestBody Currency currency) {
         return currencyRepository.save(currency);
     }
 
-    @PutMapping("currency/{id}")
+    @PutMapping("/currency/{id}")
     public ResponseEntity<Currency> updateCurrency(@PathVariable(value = "id") Long currencyId,
             @Valid @RequestBody Currency currencyDetails) throws ResourceNotFoundException {
         Currency currency = currencyRepository.findById(currencyId)
@@ -75,20 +77,21 @@ public class CurrencyController
         return response;
     }
     
-    @GetMapping("getExchangeRate")
-    public ResponseEntity<Currency> getExchangeRate(@Valid @RequestBody Currency targetCurrency)
+    @GetMapping("/currency/getExchangeRate")
+    public BigDecimal getExchangeRate(@Valid @RequestBody ExchangeCurrency targetCurrency)
             throws ResourceNotFoundException {
         
         
-        return ResponseEntity.ok().body(targetCurrency);
+        return targetCurrency.getExchangeRate(targetCurrency);
     }
     
-    @GetMapping("getExchangeAmount")
-    public ResponseEntity<Currency> getExchangeAmount(@Valid @RequestBody Currency targetCurrency)
+    @GetMapping("/currency/getExchangeAmount/{amount}")
+    public BigDecimal getExchangeAmount(@PathVariable(value = "amount") Double amount,
+        @Valid @RequestBody ExchangeCurrency targetCurrency)
             throws ResourceNotFoundException {
         
         
-        return ResponseEntity.ok().body(targetCurrency);
+        return targetCurrency.getExchangeAmount(targetCurrency, amount);
     }
 
 
